@@ -1,0 +1,107 @@
+/* Main container */
+.wordle-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    min-height: 80vh;
+    background-color: #f3f4f6;
+}
+  
+  /* Header */
+.wordle-header {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+}
+  
+  /* Game board */
+.game-board {
+    display: grid;
+    grid-template-rows: repeat(6, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+  
+.game-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+}
+  
+.game-cell {
+    width: 3.5rem;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 2px solid #e5e7eb;
+    background-color: white;
+}
+  
+.game-cell.current {
+    border-color: #9ca3af;
+}
+  
+.game-cell.filled {
+    background-color: #e5e7eb;
+}
+  
+  /* Virtual keyboard */
+.keyboard-container {
+    width: 100%;
+    max-width: 36rem;
+}
+     
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+.keyboard-key {
+    width: 2.5rem;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    background-color: #d1d5db;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+  
+.keyboard-key:hover {
+    background-color: #9ca3af;
+}
+  
+.keyboard-key.enter-key {
+    width: 4rem;
+}
+  
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .game-cell {
+        width: 3rem;
+        height: 3rem;
+        font-size: 1.25rem;
+        }
+  
+    .keyboard-key {
+        width: 2rem;
+        height: 3rem;
+        font-size: 0.75rem;
+    }
+  
+    .keyboard-key.enter-key {
+        width: 3.5rem;
+    }
+}
