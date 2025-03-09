@@ -1,0 +1,108 @@
+.stats-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stats-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.stats-header h1 {
+    margin: 0;
+    font-size: 2em;
+}
+
+.back-button button {
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.stats-summary {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+.stat-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+}
+
+.stat-number {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.stat-label {
+    font-size: 0.8em;
+    text-transform: uppercase;
+    margin-top: 5px;
+}
+
+.guess-distribution {
+    width: 100%;
+}
+
+.guess-distribution h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
+.distribution-container {
+    width: 100%;
+}
+
+.distribution-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    height: 30px;
+}
+
+.guess-number {
+    width: 20px;
+    text-align: center;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.distribution-bar {
+    height: 100%;
+    min-width: 30px;
+    background-color: #6aaa64;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.distribution-count {
+    color: white;
+    font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .stats-summary {
+        flex-wrap: wrap;
+    }
+    
+    .stat-box {
+        margin: 5px 10px;
+    }
+}

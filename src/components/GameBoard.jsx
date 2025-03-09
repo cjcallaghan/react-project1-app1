@@ -1,32 +1,50 @@
 import React from 'react';
 
-const GameBoard = ({ guesses, currentRow, currentGuess }) => {
-     return (
-          <div className="game-board">
-               {/* 6 rows of guesses */}
-               {guesses.map((guess, rowIndex) => (
-                    <div key={rowIndex} className="game-row">
-                         {/* 5 boxes for each letter*/}
-                         {[...Array(5)].map((_, colIndex) => { 
-                              // figure out which letter to show
-                              const letter = rowIndex === currentRow 
-                                   ? currentGuess[colIndex] 
-                                   : guess[colIndex];
-                              
-                              //render each letter box with correct css
-                              return (
-                                   <div
-                                        key={colIndex}
-                                        className={`game-cell ${rowIndex === currentRow ? 'current' : ''} ${letter ? 'filled' : ''}`}
-                                   >
-                                        {letter || ''}
-                                   </div>
-                              );
-                         })}
-                    </div>
-               ))}
-          </div>
-     );
+const GameBoard = ({ guesses, currentRow, currentGuess, evaluations }) => {
+    // Generate the grid with 6 rows and 5 columns
+    const grid = [];
+    
+    for (let row = 0; row < 6; row++) {
+        const rowCells = [];
+        const rowGuess = row === currentRow ? currentGuess : guesses[row];
+        const rowEvaluation = evaluations[row] || Array(5).fill(null);
+        
+        for (let col = 0; col < 5; col++) {
+            let cellContent = '';
+            let cellStatus = 'empty';
+            
+            if (row < currentRow) {
+                // Completed row
+                cellContent = guesses[row][col];
+                cellStatus = rowEvaluation[col]; // 'correct', 'present', or 'absent'
+            } else if (row === currentRow) {
+                // Current row
+                cellContent = rowGuess[col] || '';
+                cellStatus = cellContent ? 'tbd' : 'empty';
+            }
+            
+            rowCells.push(
+                <div 
+                    key={`${row}-${col}`} 
+                    className={`cell ${cellStatus}`}
+                >
+                    {cellContent}
+                </div>
+            );
+        }
+        
+        grid.push(
+            <div key={row} className="board-row">
+                {rowCells}
+            </div>
+        );
+    }
+    
+    return (
+        <div className="game-board">
+            {grid}
+        </div>
+    );
 };
 
 export default GameBoard;
