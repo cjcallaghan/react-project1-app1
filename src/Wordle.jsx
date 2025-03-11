@@ -6,37 +6,40 @@ import Keyboard from './components/Keyboard';
 import wordsFile from "./words.txt";
 
 const Wordle = () => {
-    const [currentGuess, setCurrentGuess] = useState('');
-    const [guesses, setGuesses] = useState(Array(6).fill(''));
-    const [currentRow, setCurrentRow] = useState(0);
-    const [targetWord, setTargetWord] = useState('');
-    const [wordBank, setWordBank] = useState([]);
-    const [gameStatus, setGameStatus] = useState('playing'); // 'playing', 'won', 'lost'
-    const [letterStatuses, setLetterStatuses] = useState({});
-    const [evaluations, setEvaluations] = useState(Array(6).fill(null));
-    const [showMessage, setShowMessage] = useState('');
-    const [messageTimer, setMessageTimer] = useState(null);
+    // Gameplya states
+    const [currentGuess, setCurrentGuess] = useState(''); // Current in-progress guess
+    const [guesses, setGuesses] = useState(Array(6).fill('')); // Array of all submitted guesses
+    const [currentRow, setCurrentRow] = useState(0); // Current active row (0-5)
+    const [targetWord, setTargetWord] = useState(''); // The word player needs to guess
+    const [wordBank, setWordBank] = useState([]); // List of all valid words
+    const [gameStatus, setGameStatus] = useState('playing'); // Game status: 'playing', 'won', 'lost'
+    
+    // UI states
+    const [letterStatuses, setLetterStatuses] = useState({}); // Status of each letter on keyboard
+    const [evaluations, setEvaluations] = useState(Array(6).fill(null)); // Evaluations for each guess
+    const [showMessage, setShowMessage] = useState(''); // Toast message to display
+    const [messageTimer, setMessageTimer] = useState(null); // Timer for clearing toast message
 
-    // Load word bank and select random word
+    // Load word bank from file and select random target word
     useEffect(() => {
         const loadWordBank = async () => {
             try {
-                //throw new Error("")
+                // Fetch the word list file
                 const response = await fetch(wordsFile);
                 const result = await response.text();
                 
-                // Handle different line endings based on operating system
+                // Split the file content into words, handling different line endings
                 let words;
                 words = result.split("\r\n");
                 
-                // Filter out any empty strings that might come from extra line breaks
+                // Filter out any empty strings from extra line breaks
                 words = words.filter(word => word.trim().length > 0);
                 
-                // Convert all words to lowercase
+                // Convert all words to lowercase for consistency
                 const lowerCaseWords = words.map(word => word.toLowerCase());
                 setWordBank(lowerCaseWords);
                 
-                // Select random word
+                // Select random word as the target
                 const randomIndex = Math.floor(Math.random() * lowerCaseWords.length);
                 const selectedWord = lowerCaseWords[randomIndex];
                 setTargetWord(selectedWord);
@@ -53,14 +56,17 @@ const Wordle = () => {
         loadWordBank();
     }, []);
 
-    // Display temporary message
+    // Display a temporary toast message to the user
     const displayMessage = (message, duration = 2000) => {
         // Clear any existing timer
         if (messageTimer) {
             clearTimeout(messageTimer);
         }
         
+        // Show the message
         setShowMessage(message);
+        
+        // Set a timer to clear the message
         const timer = setTimeout(() => {
             setShowMessage('');
         }, duration);
@@ -71,19 +77,22 @@ const Wordle = () => {
     const evaluateGuess = (guess) => {
         if (!targetWord) return null;
         
+        // Initialize all positions as 'absent'
         const evaluation = Array(5).fill('absent');
+        
+        // Convert words to arrays of characters
         const targetLetters = targetWord.split('');
         const guessLetters = guess.split('');
         
-        // First pass: mark correct letters
+        // First pass: mark correct letters (right letter in right position)
         for (let i = 0; i < 5; i++) {
             if (guessLetters[i] === targetLetters[i]) {
                 evaluation[i] = 'correct';
-                targetLetters[i] = null; // Mark as used
+                targetLetters[i] = null; // Mark as used to prevent double-counting
             }
         }
         
-        // Second pass: mark present letters
+        // Second pass: mark present letters (right letter in wrong position)
         for (let i = 0; i < 5; i++) {
             if (evaluation[i] === 'absent') {
                 const targetIndex = targetLetters.indexOf(guessLetters[i]);
@@ -97,7 +106,7 @@ const Wordle = () => {
         return evaluation;
     };
 
-    // Update letter statuses for keyboard
+    // Update the status of each letter on the keyboard based on evaluations
     const updateLetterStatuses = (guess, evaluation) => {
         const newStatuses = { ...letterStatuses };
         
@@ -117,12 +126,12 @@ const Wordle = () => {
         setLetterStatuses(newStatuses);
     };
 
-    // Check if the guess is a valid word
+    // Check if a word is in the valid word list
     const isValidWord = (word) => {
         return wordBank.includes(word.toLowerCase());
     };
 
-    // Update game statistics in localStorage
+    // Update game statistics in localStorage when a game ends
     const updateGameStats = (won, numGuesses) => {
         // Get current stats from localStorage or initialize if not present
         const statsString = localStorage.getItem('wordleStats');
@@ -146,28 +155,34 @@ const Wordle = () => {
         localStorage.setItem('wordleStats', JSON.stringify(stats));
     };
 
-    // Submit a guess
+    // Submit the current guess for evaluation
     const submitGuess = () => {
+        // Check if the guess has enough letters
         if (currentGuess.length !== 5) {
             displayMessage('Not enough letters');
             return;
         }
         
+        // Check if the guess is a valid word
         if (!isValidWord(currentGuess)) {
             displayMessage('Not in word list');
             return;
         }
         
+        // Process the guess if the game is still active
         if (currentRow < 6 && gameStatus === 'playing') {
+            // Add the guess to the guesses array
             const newGuesses = [...guesses];
             newGuesses[currentRow] = currentGuess;
             setGuesses(newGuesses);
             
+            // Evaluate the guess
             const evaluation = evaluateGuess(currentGuess);
             const newEvaluations = [...evaluations];
             newEvaluations[currentRow] = evaluation;
             setEvaluations(newEvaluations);
             
+            // Update keyboard letter statuses
             updateLetterStatuses(currentGuess, evaluation);
             
             // Check if the game is won
@@ -183,14 +198,16 @@ const Wordle = () => {
                 // Update stats with loss
                 updateGameStats(false, 0);
             } else {
+                // Move to next row
                 setCurrentRow(currentRow + 1);
             }
             
+            // Clear the current guess
             setCurrentGuess('');
         }
     };
 
-    // Handle keyboard input
+    // Handle physical keyboard input
     const handleKeyPress = (e) => {
         if (gameStatus !== 'playing') return;
         
@@ -204,6 +221,7 @@ const Wordle = () => {
             return;
         }
         
+        // Only allow letters and limit to 5 characters
         if (currentGuess.length >= 5) return;
         
         if (e.key.match(/^[a-zA-Z]$/)) {
@@ -211,7 +229,7 @@ const Wordle = () => {
         }
     };
 
-    // Handle on-screen keyboard clicks
+    // Handle on-screen keyboard button clicks
     const handleKeyClick = (key) => {
         if (gameStatus !== 'playing') return;
         
@@ -224,7 +242,7 @@ const Wordle = () => {
         }
     };
 
-    // Add and remove keyboard event listener
+    // Add keyboard event listener when component mounts
     useEffect(() => {
         window.addEventListener('keydown', handleKeyPress);
         return () => {
@@ -232,7 +250,7 @@ const Wordle = () => {
         };
     }, [currentGuess, gameStatus, targetWord, wordBank]);
 
-    // Clean up message timer on unmount
+    // Clean up message timer when component unmounts
     useEffect(() => {
         return () => {
             if (messageTimer) {
@@ -241,11 +259,12 @@ const Wordle = () => {
         };
     }, [messageTimer]);
 
-    // Start a new game
+    // Start a new game with a fresh random word
     const startNewGame = () => {
         const randomIndex = Math.floor(Math.random() * wordBank.length);
         const selectedWord = wordBank[randomIndex].toLowerCase();
         setTargetWord(selectedWord);
+        // Reset all game state
         setGuesses(Array(6).fill(''));
         setCurrentRow(0);
         setCurrentGuess('');
@@ -257,26 +276,31 @@ const Wordle = () => {
 
     return (
         <div className="wordle-container">
+            {/* Game header with title and buttons */}
             <div className="wordle-header">
                 <h1>Wordle</h1>
                 <div className="header-buttons">
+                    {/* Only show New Game button when game is over */}
                     {(gameStatus === 'won' || gameStatus === 'lost') && (
                         <button onClick={startNewGame} className="new-game-button">
                             New Game
                         </button>
                     )}
+                    {/* Link to stats page */}
                     <Link to="/stats" className="stats-button">
                         <button>Stats</button>
                     </Link>
                 </div>
             </div>
 
+            {/* Toast message is the default naming convention for this kind of popup */}
             {showMessage && (
                 <div className="message-toast">
                     {showMessage}
                 </div>
             )}
 
+            {/* Game board component */}
             <GameBoard
                 guesses={guesses}
                 currentRow={currentRow}
@@ -284,6 +308,7 @@ const Wordle = () => {
                 evaluations={evaluations}
             />
 
+            {/* Virtual keyboard component */}
             <Keyboard
                 onKeyClick={handleKeyClick}
                 letterStatuses={letterStatuses}
