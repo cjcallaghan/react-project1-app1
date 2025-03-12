@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import './wordle.css';
 import GameBoard from './components/GameBoard';
 import Keyboard from './components/Keyboard';
-import wordsFile from "./words.txt";
+import wordsFile from "./assets/words.txt";
 
 const Wordle = () => {
     // Gameplya states
@@ -24,6 +24,7 @@ const Wordle = () => {
     useEffect(() => {
         const loadWordBank = async () => {
             try {
+                //throw new Error()
                 // Fetch the word list file
                 const response = await fetch(wordsFile);
                 const result = await response.text();
