@@ -24,7 +24,7 @@ const Wordle = () => {
     useEffect(() => {
         const loadWordBank = async () => {
             try {
-                //throw new Error()
+                //throw new Error();
                 // Fetch the word list file
                 const response = await fetch(wordsFile);
                 const result = await response.text();
