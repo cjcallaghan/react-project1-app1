@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import './wordle.css';
 import GameBoard from './components/GameBoard';
 import Keyboard from './components/Keyboard';
-import wordsFile from "./assets/words.txt";
 
 const Wordle = () => {
     // Gameplya states
@@ -26,7 +25,7 @@ const Wordle = () => {
             try {
                 //throw new Error();
                 // Fetch the word list file
-                const response = await fetch(wordsFile);
+                const response = await fetch("words.txt");
                 const result = await response.text();
                 
                 // Split the file content into words, handling different line endings
@@ -279,7 +278,7 @@ const Wordle = () => {
         <div className="wordle-container">
             {/* Game header with title and buttons */}
             <div className="wordle-header">
-                <h1>Wordle</h1>
+                <h1>Fake Wordle</h1>
                 <div className="header-buttons">
                     {/* Only show New Game button when game is over */}
                     {(gameStatus === 'won' || gameStatus === 'lost') && (
