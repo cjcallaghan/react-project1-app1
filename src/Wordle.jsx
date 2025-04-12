@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import './wordle.css';
 import GameBoard from './components/GameBoard';
 import Keyboard from './components/Keyboard';
+import wordList from "./words.txt";
 
 const Wordle = () => {
     // Gameplya states
@@ -25,7 +26,7 @@ const Wordle = () => {
             try {
                 //throw new Error();
                 // Fetch the word list file
-                const response = await fetch("words.txt");
+                const response = await fetch(wordList);
                 const result = await response.text();
                 
                 // Split the file content into words, handling different line endings
