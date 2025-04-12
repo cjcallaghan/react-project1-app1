@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import './wordle.css';
 import GameBoard from './components/GameBoard';
 import Keyboard from './components/Keyboard';
-import wordList from "./words.txt";
 
 const Wordle = () => {
     // Gameplya states
@@ -22,11 +21,19 @@ const Wordle = () => {
 
     // Load word bank from file and select random target word
     useEffect(() => {
+        //gh pages fix
+        const getWordBankURL = () => {
+            // Extract the root path (like /react-project1-app1) from current location
+            const basePath = window.location.pathname.split('/').filter(Boolean)[0];
+            const prefix = basePath === 'react-project1-app1' ? `/${basePath}` : '';
+            return `${prefix}/words.txt`;
+        };
+
         const loadWordBank = async () => {
             try {
                 //throw new Error();
                 // Fetch the word list file
-                const response = await fetch(wordList);
+                const response = await fetch(getWordBankURL())
                 const result = await response.text();
                 
                 // Split the file content into words, handling different line endings
